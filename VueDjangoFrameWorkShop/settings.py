@@ -11,14 +11,15 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 import datetime
 import os
+from urllib.parse import urljoin
 import sys
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from past.builtins import execfile
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # sys.path.insert(0,BASE_DIR)
-sys.path.insert(0,os.path.join(BASE_DIR, 'apps'))
-sys.path.insert(0,os.path.join(BASE_DIR, 'extra_apps'))
+sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
+sys.path.insert(0, os.path.join(BASE_DIR, 'extra_apps'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
@@ -65,6 +66,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'social_django',
     'raven.contrib.django.raven_compat',
+    'replace.apps.ReplaceConfig'
 ]
 
 MIDDLEWARE = [
@@ -106,7 +108,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'VueDjangoFrameWorkShop.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
@@ -120,7 +121,6 @@ DATABASES = {
         "OPTIONS": {"init_command": "SET default_storage_engine=INNODB;"}
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -139,7 +139,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
@@ -162,13 +161,12 @@ USE_TZ = False
 # 设置上传文件，图片访问路径
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
-MEDIA_URL = "/media/"
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "static"),
+# ]
+STATIC_URL = '/static/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-
+# MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # 所有与drf相关的设置写在这里面
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -180,8 +178,8 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle'
     ),
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/day',
-        'user': '1000/day'
+        'anon': '1000/day',
+        'user': '10000/day'
     }
 }
 
@@ -202,15 +200,18 @@ REST_FRAMEWORK_EXTENSIONS = {
     'DEFAULT_CACHE_RESPONSE_TIMEOUT': 60 * 15
 }
 
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
-    }
-}
+"""redis 缓存"""
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": "redis://127.0.0.1:6379/",
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#         }
+#     }
+# }
+
+
 # 支付宝相关的key路径
 private_key_path = os.path.join(BASE_DIR, 'apps/trade/keys/private_2048.txt')
 ali_pub_key_path = os.path.join(BASE_DIR, 'apps/trade/keys/alipay_key_2048.txt')
@@ -225,13 +226,26 @@ SOCIAL_AUTH_QQ_SECRET = 'bazqux'
 SOCIAL_AUTH_WEIXIN_KEY = 'foobar'
 SOCIAL_AUTH_WEIXIN_SECRET = 'bazqux'
 
-# sentry设置
-import os
-import raven
+QINIU_ACCESS_KEY = 'h_r41Eu27LsUkO5lS99TLxWjwJg9CXA_Pz2dZ5k8'
+QINIU_SECRET_KEY = 'xp2UcNU0AGMYhMHCkaZKdnJUqSuq1EPqPaNPuf7Q'
+QINIU_BUCKET_NAME = ' vueshopstatic'
+QINIU_BUCKET_DOMAIN = 'vueshopstatic.mtianyan.cn'
+QINIU_SECURE_URL = 0
 
-RAVEN_CONFIG = {
-    'dsn': 'https://<key>:<secret>@sentry.io/<project>',
-}
+DEFAULT_FILE_STORAGE = 'qiniustorage.backends.QiniuMediaStorage'
+STATICFILES_STORAGE = 'qiniustorage.backends.QiniuStaticStorage'
+
+MEDIA_ROOT = os.path.join('/root/projects/VueDjangoFrameWorkShop/', 'media')
+MEDIA_URL = 'http://{0}/root/projects/VueDjangoFrameWorkShop/media/'.format(QINIU_BUCKET_DOMAIN)
+STATIC_URL = urljoin('http://{0}'.format(QINIU_BUCKET_DOMAIN), '/static/')
+
+# # sentry设置
+# import os
+# import raven
+
+# RAVEN_CONFIG = {
+#     'dsn': 'https://<key>:<secret>@sentry.io/<project>',
+# }
 
 REMOTE_DEBUG = True
 PROJECT_ROOT = os.path.join(BASE_DIR, 'VueDjangoFrameWorkShop')

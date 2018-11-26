@@ -39,6 +39,34 @@ def save_upload_file(PostFile, FilePath):
     f.close()
     return u"SUCCESS"
 
+#保存上传文件到七牛
+def save_upload_file_to_qiniu(upload_file,key):
+    access_key = 'h_r41Eu27LsUkO5lS99TLxWjwJg9CXA_Pz2dZ5k8'
+    secret_key = 'xp2UcNU0AGMYhMHCkaZKdnJUqSuq1EPqPaNPuf7Q'
+    bucket_name = 'vueshopstatic'
+
+    from qiniu import Auth,put_file,put_data
+    q = Auth(access_key, secret_key)
+    token = q.upload_token(bucket_name, key)
+        # ret, info = put_file(token, key, upload_file)
+
+        # print(type(upload_file))
+        # print(token)
+        # print(type(token))
+        # print(key)
+        # print(type(key))
+        # with open(upload_file,'wb') as f:
+        #     upload_bytes = f.read()
+        
+    ret, info = put_data(token, key, upload_file)
+    # print(ret)
+    if ret.get('key',None) == None:
+        raise Exception('upload error')
+    else:
+        return u"SUCCESS"
+    # except Exception as e:
+    #     print(str(e))
+    #     return str(e)
 
 @csrf_exempt
 def get_ueditor_settings(request):
@@ -208,17 +236,27 @@ def UploadFile(request):
             state = save_scrawl_file(request, os.path.join(OutputPath, OutputFile))
         else:
             # 保存到文件中，如果保存错误，需要返回ERROR
-            state = save_upload_file(file, os.path.join(OutputPath, OutputFile))
-
+            # state = save_upload_file(file, os.path.join(OutputPath, OutputFile))
+            state= save_upload_file_to_qiniu(file,OutputPathFormat)
     # 返回数据
+    # return_info = {
+    #     # 保存后的文件名称
+    #     'url': urljoin(USettings.gSettings.MEDIA_URL, OutputPathFormat),
+    #     # 原始文件名
+    #     'original': upload_file_name,
+    #     'type': upload_original_ext,
+    #     # 上传状态，成功时返回SUCCESS,其他任何值将原样返回至图片上传框中
+    #     'state': state,
+    #     'size': upload_file_size
+    # }
+    #返回数据
+    QINIU_BUCKET_DOMAIN = 'http://vueshopstatic.mtianyan.cn/'
     return_info = {
-        # 保存后的文件名称
-        'url': urljoin(USettings.gSettings.MEDIA_URL, OutputPathFormat),
-        # 原始文件名
-        'original': upload_file_name,
+        # 'url': urllib.basejoin(USettings.gSettings.MEDIA_URL , OutputPathFormat) ,                # 保存后的文件名称
+        'url': urljoin(QINIU_BUCKET_DOMAIN , OutputPathFormat) ,                # 保存后的文件名称
+        'original': upload_file_name,                  #原始文件名
         'type': upload_original_ext,
-        # 上传状态，成功时返回SUCCESS,其他任何值将原样返回至图片上传框中
-        'state': state,
+        'state': state,                         #上传状态，成功时返回SUCCESS,其他任何值将原样返回至图片上传框中
         'size': upload_file_size
     }
     return HttpResponse(json.dumps(return_info, ensure_ascii=False), content_type="application/javascript")

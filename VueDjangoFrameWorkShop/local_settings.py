@@ -15,3 +15,12 @@ DATABASES = {
         "OPTIONS": {"init_command": "SET default_storage_engine=INNODB;"}
     }
 }
+
+QINIU_ACCESS_KEY = 'h_r41Eu27LsUkO5lS99TLxWjwJg9CXA_Pz2dZ5k8'
+QINIU_SECRET_KEY = 'xp2UcNU0AGMYhMHCkaZKdnJUqSuq1EPqPaNPuf7Q'
+QINIU_BUCKET_NAME = ' vueshopstatic'
+QINIU_BUCKET_DOMAIN = 'vueshopstatic.mtianyan.cn'
+QINIU_SECURE_URL = 0
+
+DEFAULT_FILE_STORAGE = 'qiniustorage.backends.QiniuMediaStorage'
+STATICFILES_STORAGE  = 'qiniustorage.backends.QiniuStaticStorage'

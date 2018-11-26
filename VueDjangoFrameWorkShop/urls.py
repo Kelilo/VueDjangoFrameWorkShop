@@ -15,6 +15,8 @@ Including another URLconf
 """
 
 from django.views.static import serve
+
+from replace.views import IndexView
 from rest_framework.documentation import include_docs_urls
 
 import xadmin
@@ -74,12 +76,14 @@ router.register(r'indexgoods', IndexCategoryViewset, base_name="indexgoods")
 router.register(r'hotsearchs', HotSearchsViewset, base_name="hotsearchs")
 
 # from VueDjangoFrameWorkShop.settings import STATIC_ROOT
+from django.views.generic.base import RedirectView
+from users.views import favicon_view
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path('xadmin/', xadmin.site.urls),
     # 处理图片显示的url,使用Django自带serve,传入参数告诉它去哪个路径找，我们有配置好的路径MEDIAROOT
-    re_path('media/(?P<path>.*)', serve, {"document_root": MEDIA_ROOT }),
+    re_path('media/(?P<path>.*)', serve, {"document_root": MEDIA_ROOT}),
     # 富文本相关url
     path('ueditor/', include('DjangoUeditor.urls')),
 
@@ -104,10 +108,12 @@ urlpatterns = [
     path('alipay/return/', AlipayView.as_view()),
 
     # 首页
-    path('index/', TemplateView.as_view(template_name='index.html'), name='index'),
+    path('index/', IndexView.as_view(), name="index"),
 
     # re_path('static/(?P<path>.*)', serve, {"document_root": STATIC_ROOT}),
 
     # 第三方登录
-    path('', include('social_django.urls', namespace='social'))
+    path('', include('social_django.urls', namespace='social')),
+
+    path('favicon.ico', favicon_view),
 ]

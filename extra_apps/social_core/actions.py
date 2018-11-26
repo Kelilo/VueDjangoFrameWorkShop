@@ -16,6 +16,8 @@ def do_auth(backend, redirect_name='next'):
     if redirect_name in data:
         # Check and sanitize a user-defined GET/POST next field value
         redirect_uri = data[redirect_name]
+        if backend.name == "qq":
+            redirect_uri = 'http://vueshop.mtianyan.cn/complete/qq'
         if backend.setting('SANITIZE_REDIRECTS', True):
             allowed_hosts = backend.setting('ALLOWED_REDIRECT_HOSTS', []) + \
                             [backend.strategy.request_host()]
@@ -27,7 +29,7 @@ def do_auth(backend, redirect_name='next'):
     return backend.start()
 
 
-def do_complete(backend, login, user=None, redirect_name='next',
+def do_complete(backend='qq', login=None, user=None, redirect_name='next',
                 *args, **kwargs):
     data = backend.strategy.request_data()
 

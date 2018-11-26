@@ -23,7 +23,10 @@ class QQOAuth2(BaseOAuth2):
         ('figureurl_qq_1', 'profile_image_url'),
         ('gender', 'gender')
     ]
-
+    
+    def get_redirect_uri(self,state=None):
+        uri = 'http://vueshop.mtianyan.cn/complete/qq'
+        return uri
     def get_user_details(self, response):
         """
         Return user detail from QQ account sometimes nickname will duplicate
@@ -67,5 +70,7 @@ class QQOAuth2(BaseOAuth2):
         return response
 
     def request_access_token(self, url, data, *args, **kwargs):
-        response = self.request(url, params=data, *args, **kwargs)
+        # method = kwargs['method']
+        # kwargs.pop('method')
+        response = self.request(url, *args, **kwargs)
         return parse_qs(response.content)

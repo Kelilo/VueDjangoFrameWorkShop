@@ -46,6 +46,7 @@ class SmsCodeViewset(CreateModelMixin, viewsets.GenericViewSet):
     """
     发送短信验证码
     """
+    authentication_classes = ()
     serializer_class = SmsSerializer
 
     def generate_code(self):
@@ -87,9 +88,10 @@ class UserViewset(CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveMode
     """
     用户
     """
+    authentication_classes = ()
     serializer_class = UserRegSerializer
     queryset = User.objects.all()
-    authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
+    # authentication_classes = (JSONWebTokenAuthentication, authentication.SessionAuthentication)
 
     def get_serializer_class(self):
         if self.action == "retrieve":
@@ -102,7 +104,8 @@ class UserViewset(CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveMode
     # permission_classes = (permissions.IsAuthenticated, )
     def get_permissions(self):
         if self.action == "retrieve":
-            return [permissions.IsAuthenticated()]
+            # return [permissions.IsAuthenticated()]
+            return []
         elif self.action == "create":
             return []
 
@@ -110,6 +113,7 @@ class UserViewset(CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveMode
 
 
     def create(self, request, *args, **kwargs):
+        authentication_classes = ()
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = self.perform_create(serializer)
@@ -128,3 +132,7 @@ class UserViewset(CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveMode
 
     def perform_create(self, serializer):
         return serializer.save()
+
+from django.views.generic.base import RedirectView
+favicon_view = RedirectView.as_view(
+    url='http://vueshopstatic.mtianyan.cn/daishu/favicon.ico', permanent=True)

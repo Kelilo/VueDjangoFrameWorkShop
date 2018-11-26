@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="dcc053f8-3549-4934-8960-89b2c3d264fc" name="ght" url="http://139.199.189.211">
+        <fileTransfer host="139.199.189.211" port="10022" privateKey="$PROJECT_DIR$/../.ssh/ght_tencent" rootFolder="/home/mtianyan" accessType="SFTP" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+          <option name="port" value="10022" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

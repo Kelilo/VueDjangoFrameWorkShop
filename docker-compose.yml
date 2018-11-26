@@ -1,0 +1,32 @@
+mtianyan_mysql:
+  restart: always
+  image: mysql:5.7
+  ports:
+    - "3306:3306"
+  environment:
+    - MYSQL_DATABASE=vue_shop
+    - MYSQL_ROOT_PASSWORD=mtianyanmysql
+
+mtianyan_nginx:
+  restart: always
+  image: nginx
+  ports:
+    - "80:80"
+  volumes:
+    - ./conf/nginx_book.conf:/etc/nginx/conf.d/nginx_book.conf
+  volumes_from:
+    - mtianyan_book_store
+  links:
+    - mtianyan_book_store:web
+
+mtianyan_book_store:
+  restart: always
+  build: .
+  ports:
+    - "8000:8000"
+  volumes:
+    - .:/VueDjangoFrameWorkShop
+    - ./conf/uwsgi.ini:/etc/uwsgi.ini
+  links:
+    - mtianyan_mysql:mysql
+  command: uwsgi -s :8000 -w VueDjangoFrameWorkShop.wsgi -p 3
