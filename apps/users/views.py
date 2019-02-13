@@ -1,3 +1,5 @@
+from django.views.generic.base import RedirectView
+from rest_framework.mixins import CreateModelMixin
 from random import choice
 
 from django.contrib.auth.backends import ModelBackend
@@ -19,7 +21,6 @@ from utils.yunpian import YunPian
 
 User = get_user_model()
 # 发送验证码是创建model中一条记录的操作
-from rest_framework.mixins import CreateModelMixin
 # Create your views here.
 
 
@@ -27,6 +28,7 @@ class CustomBackend(ModelBackend):
     """
     自定义用户验证规则
     """
+
     def authenticate(self, username=None, password=None, **kwargs):
         try:
             # 不希望用户存在两个，get只能有一个。两个是get失败的一种原因
@@ -111,7 +113,6 @@ class UserViewset(CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveMode
 
         return []
 
-
     def create(self, request, *args, **kwargs):
         authentication_classes = ()
         serializer = self.get_serializer(data=request.data)
@@ -133,6 +134,6 @@ class UserViewset(CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveMode
     def perform_create(self, serializer):
         return serializer.save()
 
-from django.views.generic.base import RedirectView
+
 favicon_view = RedirectView.as_view(
     url='http://vueshopstatic.mtianyan.cn/daishu/favicon.ico', permanent=True)
